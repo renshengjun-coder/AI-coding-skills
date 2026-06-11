@@ -36,7 +36,7 @@ function isArrayIndex(name: string, length: number): boolean {
   return Number.isSafeInteger(index) && index < length;
 }
 
-function serializeArray(value: unknown[], ancestors: WeakSet<object>, depth: number): string {
+function serializeArray(value: unknown[], seen: WeakSet<object>, depth: number): string {
   if (value.length > MAX_CANONICAL_ARRAY_LENGTH) {
     throw incompatible(`arrays must contain at most ${MAX_CANONICAL_ARRAY_LENGTH} elements`);
   }
@@ -60,12 +60,12 @@ function serializeArray(value: unknown[], ancestors: WeakSet<object>, depth: num
     if (!("value" in descriptor)) {
       throw incompatible("array elements must be enumerable data properties");
     }
-    elements.push(serialize(descriptor.value, ancestors, depth + 1));
+    elements.push(serialize(descriptor.value, seen, depth + 1));
   }
   return `[${elements.join(",")}]`;
 }
 
-function serializeObject(value: object, ancestors: WeakSet<object>, depth: number): string {
+function serializeObject(value: object, seen: WeakSet<object>, depth: number): string {
   const prototype = Object.getPrototypeOf(value) as unknown;
   if (prototype !== Object.prototype && prototype !== null) {
     throw incompatible("objects must be plain objects");
@@ -81,12 +81,12 @@ function serializeObject(value: object, ancestors: WeakSet<object>, depth: numbe
     if (!descriptor?.enumerable || !("value" in descriptor)) {
       throw incompatible("object properties must be enumerable data properties");
     }
-    members.push(`${serializeString(key)}:${serialize(descriptor.value, ancestors, depth + 1)}`);
+    members.push(`${serializeString(key)}:${serialize(descriptor.value, seen, depth + 1)}`);
   }
   return `{${members.join(",")}}`;
 }
 
-function serialize(value: unknown, ancestors: WeakSet<object>, depth: number): string {
+function serialize(value: unknown, seen: WeakSet<object>, depth: number): string {
   if (value === null) return "null";
   if (typeof value === "string") return serializeString(value);
   if (typeof value === "boolean") return String(value);
@@ -98,16 +98,14 @@ function serialize(value: unknown, ancestors: WeakSet<object>, depth: number): s
   if (depth >= MAX_CANONICAL_NESTING_DEPTH) {
     throw incompatible(`nesting depth must not exceed ${MAX_CANONICAL_NESTING_DEPTH}`);
   }
-  if (ancestors.has(value)) throw incompatible("cyclic values are not supported");
-
-  ancestors.add(value);
-  try {
-    return Array.isArray(value)
-      ? serializeArray(value, ancestors, depth)
-      : serializeObject(value, ancestors, depth);
-  } finally {
-    ancestors.delete(value);
+  if (seen.has(value)) {
+    throw incompatible("cyclic or repeated object or array references are not supported");
   }
+
+  seen.add(value);
+  return Array.isArray(value)
+    ? serializeArray(value, seen, depth)
+    : serializeObject(value, seen, depth);
 }
 
 export function canonicalize(value: unknown): string {

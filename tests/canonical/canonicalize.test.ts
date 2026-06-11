@@ -70,6 +70,17 @@ describe("canonicalize", () => {
     expect(() => canonicalize(value)).toThrow("cyclic");
   });
 
+  it("rejects shared-reference DAGs before they can amplify output", () => {
+    let shared: unknown = { value: 1 };
+    for (let depth = 0; depth < 20; depth += 1) shared = [shared, shared];
+
+    expect(() => canonicalize(shared)).toThrow("repeated object or array references");
+  });
+
+  it("accepts equal data held by distinct object identities", () => {
+    expect(canonicalize([{ value: 1 }, { value: 1 }])).toBe('[{"value":1},{"value":1}]');
+  });
+
   it("rejects huge sparse arrays before walking their declared length", () => {
     const value: unknown[] = [];
     value.length = MAX_CANONICAL_ARRAY_LENGTH + 1;
