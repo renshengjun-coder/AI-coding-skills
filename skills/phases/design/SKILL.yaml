@@ -1,0 +1,13 @@
+apiVersion: loop.dev/v1
+kind: PhaseSkill
+metadata:
+  id: design
+  version: 1.0.0
+  description: Produce and self-check architecture and design documents.
+spec:
+  phase: design
+  outputArtifactType: design-document
+  requiredContext: [changePackage, upstreamArtifacts]
+  optionalContext: [findings]
+  capabilities: [read-repository, write-artifact]
+  selfCheckRules: [requirement-coverage, feasibility, failure-behavior, design-consistency]

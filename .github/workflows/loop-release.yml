@@ -1,0 +1,61 @@
+name: Loop Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_id:
+        description: Change package ID to release
+        required: true
+        type: string
+      environment:
+        description: GitHub deployment environment (use protected release for production)
+        required: false
+        type: string
+        default: release
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    name: Release ${{ inputs.package_id }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c2afbcb # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d55f19a4f3235432ede57feaa53 # v4.1.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install and build
+        run: npm ci && npm run build
+
+      - name: Verify package for release
+        run: |
+          npm run loop -- verify-changed \
+            --package-id "${{ inputs.package_id }}" \
+            --mode enforce
+
+      - name: Prepare release manifest
+        id: manifest
+        run: |
+          npm run loop -- release prepare "${{ inputs.package_id }}" \
+            --commit "${{ github.sha }}" \
+            --workflow-run-id "${{ github.run_id }}"
+          MANIFEST_PATH=".loop/releases/${{ inputs.package_id }}/release-manifest.json"
+          echo "path=${MANIFEST_PATH}" >> "$GITHUB_OUTPUT"
+          echo "manifest_path=${MANIFEST_PATH}" >> "$GITHUB_ENV"
+
+      - name: Generate artifact attestations
+        uses: actions/attest-build-provenance@bb78a8087108139a4de9d004feaccf7ad76789fa # v2.0.0
+        with:
+          subject-path: |
+            ${{ env.manifest_path }}
+            dist
+            package.json

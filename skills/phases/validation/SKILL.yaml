@@ -1,0 +1,13 @@
+apiVersion: loop.dev/v1
+kind: PhaseSkill
+metadata:
+  id: validation
+  version: 1.0.0
+  description: Produce validation and test execution reports.
+spec:
+  phase: validation
+  outputArtifactType: validation-report
+  requiredContext: [changePackage, upstreamArtifacts]
+  optionalContext: [findings]
+  capabilities: [read-repository, write-artifact, run-tests]
+  selfCheckRules: [evidence-completeness, environment-identity, acceptance-coverage]

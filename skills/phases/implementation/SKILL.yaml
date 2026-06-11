@@ -1,0 +1,13 @@
+apiVersion: loop.dev/v1
+kind: PhaseSkill
+metadata:
+  id: implementation
+  version: 1.0.0
+  description: Produce implementation records and local verification evidence.
+spec:
+  phase: implementation
+  outputArtifactType: implementation-record
+  requiredContext: [changePackage, upstreamArtifacts]
+  optionalContext: [findings]
+  capabilities: [read-repository, write-artifact, run-tests]
+  selfCheckRules: [design-conformance, test-results, code-quality, trace-links]

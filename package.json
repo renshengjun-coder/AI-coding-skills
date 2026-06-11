@@ -1,7 +1,10 @@
 {
   "name": "contract-kernel",
   "version": "1.0.0",
-  "description": "",
+  "description": "Loop contract kernel and CLI for change-package evidence",
+  "bin": {
+    "loop": "./dist/cli/main.js"
+  },
   "main": "./dist/kernel/index.js",
   "types": "./dist/kernel/index.d.ts",
   "exports": {
@@ -22,6 +25,7 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "schemas": "tsx scripts/generate-schemas.ts",
+    "loop": "tsx src/cli/main.ts",
     "verify": "npm run schemas && npm run typecheck && npm test && npm run build && npm run test:package"
   },
   "keywords": [],

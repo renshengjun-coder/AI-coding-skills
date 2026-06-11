@@ -6,6 +6,7 @@ import {
   validateDocument,
   validateGraphIntegrity,
 } from "../../src/kernel/index.js";
+import { digestForEvidenceReference } from "../../src/kernel/graph/evidence-graph.js";
 import {
   approval,
   artifactEnvelope,
@@ -43,7 +44,7 @@ describe("contract kernel integration", () => {
           kind: document.kind,
           id: document.metadata.id,
           revision: document.metadata.revision,
-          digest: digestDocument(document),
+          digest: digestForEvidenceReference(document),
         })),
         evaluations: evaluation.evaluations,
         result: evaluation.result,

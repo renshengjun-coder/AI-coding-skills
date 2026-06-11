@@ -1,0 +1,9 @@
+apiVersion: loop.dev/v1
+kind: RuntimeAdapter
+metadata:
+  id: claude
+  version: 1.0.0
+spec:
+  runtime: claude
+  defaultModel: claude-sonnet
+  description: Claude Code runtime adapter for portable phase skills.

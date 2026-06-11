@@ -1,0 +1,19 @@
+apiVersion: loop.dev/v1
+kind: LifecycleLoopSkill
+metadata:
+  id: lifecycle-loop
+  version: 1.0.0
+  description: Universal lifecycle orchestration — profile-driven gate evaluation, escalation, waivers, and controlled re-entry.
+spec:
+  capabilities: [read-repository, evaluate-gates, record-decisions]
+  safety:
+    maxRevisionAttempts: 3
+    noProgressRepeatCount: 2
+  responsibilities:
+    - profile-selection
+    - final-evaluation
+    - revision-control
+    - escalation
+    - waivers
+    - gate-decisions
+    - orchestrated-phase-runs

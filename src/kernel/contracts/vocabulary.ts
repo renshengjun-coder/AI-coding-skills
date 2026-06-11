@@ -78,3 +78,7 @@ export type RuleType = (typeof RULE_TYPES)[number];
 export function isContractKind(value: unknown): value is ContractKind {
   return typeof value === "string" && CONTRACT_KINDS.includes(value as ContractKind);
 }
+
+export function isPhase(value: unknown): value is Phase {
+  return typeof value === "string" && PHASES.includes(value as Phase);
+}

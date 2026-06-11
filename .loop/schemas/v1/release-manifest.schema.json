@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loop.dev/schemas/v1/release-manifest.schema.json",
+  "title": "Loop Release Manifest",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "packageId",
+    "createdAt",
+    "gitCommit",
+    "manifestDigest",
+    "subjects",
+    "evidenceSnapshot"
+  ],
+  "properties": {
+    "apiVersion": { "const": "loop.dev/v1" },
+    "kind": { "const": "ReleaseManifest" },
+    "packageId": { "type": "string", "minLength": 1 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "gitCommit": { "type": "string", "minLength": 1 },
+    "workflowRunId": { "type": "string" },
+    "releaseGateId": { "type": "string" },
+    "manifestDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "digest", "bytes"],
+        "properties": {
+          "path": { "type": "string" },
+          "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+          "bytes": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidenceSnapshot": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "id", "revision", "digest"],
+        "properties": {
+          "kind": { "type": "string" },
+          "id": { "type": "string" },
+          "revision": { "type": "integer", "minimum": 1 },
+          "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

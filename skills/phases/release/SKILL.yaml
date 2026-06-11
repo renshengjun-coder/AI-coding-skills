@@ -1,0 +1,13 @@
+apiVersion: loop.dev/v1
+kind: PhaseSkill
+metadata:
+  id: release
+  version: 1.0.0
+  description: Produce release records and readiness evidence.
+spec:
+  phase: release
+  outputArtifactType: release-record
+  requiredContext: [changePackage, upstreamArtifacts]
+  optionalContext: [findings]
+  capabilities: [read-repository, write-artifact]
+  selfCheckRules: [release-scope, provenance, validation-status, operational-readiness, rollback-viability]

@@ -3,6 +3,7 @@ import {
   documentKey,
   type AnyDocument,
   type ChangePackage,
+  type Digest,
   type EvidenceRef,
 } from "../contracts/types.js";
 
@@ -54,6 +55,14 @@ function referencesFrom(document: AnyDocument): EvidenceRef[] {
     default:
       return [];
   }
+}
+
+/** Artifact trace edges bind content digests; other documents bind full revision digests. */
+export function digestForEvidenceReference(document: AnyDocument): Digest {
+  if (document.kind === "ArtifactEnvelope") {
+    return document.spec.content.digest;
+  }
+  return digestDocument(document);
 }
 
 function packageCycleIssues(documents: ChangePackage[]): GraphIssue[] {
@@ -116,7 +125,7 @@ export function validateGraphIntegrity(documents: AnyDocument[]): GraphIssue[] {
           documentKey: documentKey(document),
           message: `unresolved reference ${evidenceRefKey(reference)}`,
         });
-      } else if (digestDocument(referenced) !== reference.digest) {
+      } else if (digestForEvidenceReference(referenced) !== reference.digest) {
         issues.push({
           ruleId: "digest-mismatch",
           documentKey: documentKey(document),

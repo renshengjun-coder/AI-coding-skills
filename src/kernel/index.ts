@@ -6,5 +6,6 @@ export * from "./contracts/vocabulary.js";
 export * from "./freshness/evaluate-freshness.js";
 export * from "./graph/evidence-graph.js";
 export * from "./io/load-document.js";
+export * from "./io/save-document.js";
 export * from "./policy/evaluate-gate.js";
 export * from "./validation/schema-registry.js";
