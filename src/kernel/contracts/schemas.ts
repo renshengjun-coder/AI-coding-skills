@@ -124,6 +124,12 @@ const ruleEvaluation = object(
   },
 );
 
+const artifactContentProperties = {
+  path: nonEmpty,
+  url: { type: "string", format: "uri" },
+  digest,
+};
+
 const documentSchema = (kind: ContractKind, spec: JsonSchema): JsonSchema => ({
   $schema: "https://json-schema.org/draft/2020-12/schema",
   $id: `https://loop.dev/schemas/v1/${kind}.schema.json`,
@@ -177,12 +183,10 @@ export const schemasByKind: Record<ContractKind, JsonSchema> = {
         phase: enumOf(PHASES),
         artifactType: enumOf(ARTIFACT_TYPES),
         content: {
-          ...object(["digest"], {
-            path: nonEmpty,
-            url: { type: "string", format: "uri" },
-            digest,
-          }),
-          anyOf: [{ required: ["path"] }, { required: ["url"] }],
+          anyOf: [
+            object(["path", "digest"], artifactContentProperties),
+            object(["url", "digest"], artifactContentProperties),
+          ],
         },
         producer,
         inputs: array(artifactRef),

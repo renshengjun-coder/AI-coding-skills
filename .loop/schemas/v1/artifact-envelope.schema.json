@@ -87,35 +87,50 @@
           ]
         },
         "content": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "digest"
-          ],
-          "properties": {
-            "path": {
-              "type": "string",
-              "minLength": 1
-            },
-            "url": {
-              "type": "string",
-              "format": "uri"
-            },
-            "digest": {
-              "type": "string",
-              "pattern": "^sha256:[0-9a-f]{64}$"
-            }
-          },
           "anyOf": [
             {
+              "type": "object",
+              "additionalProperties": false,
               "required": [
-                "path"
-              ]
+                "path",
+                "digest"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[0-9a-f]{64}$"
+                }
+              }
             },
             {
+              "type": "object",
+              "additionalProperties": false,
               "required": [
-                "url"
-              ]
+                "url",
+                "digest"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[0-9a-f]{64}$"
+                }
+              }
             }
           ]
         },
