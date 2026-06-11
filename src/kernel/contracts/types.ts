@@ -21,8 +21,8 @@ export interface Metadata {
   updatedAt?: string;
 }
 
-export interface EvidenceRef {
-  kind: ContractKind;
+export interface EvidenceRef<K extends ContractKind = ContractKind> {
+  kind: K;
   id: string;
   revision: number;
   digest: Digest;
@@ -37,7 +37,7 @@ export interface ContractDocument<K extends ContractKind, S> {
 
 export interface PackageLink {
   relation: PackageRelationship;
-  target: EvidenceRef;
+  target: EvidenceRef<"ChangePackage">;
 }
 
 export interface ChangePackageSpec {
@@ -59,18 +59,22 @@ export interface Producer {
 
 export interface TraceEdge {
   relation: ArtifactRelationship;
-  source: EvidenceRef;
-  target: EvidenceRef;
+  source: EvidenceRef<"ArtifactEnvelope">;
+  target: EvidenceRef<"ArtifactEnvelope">;
 }
+
+export type ArtifactContent =
+  | { path: string; url?: string; digest: Digest }
+  | { path?: string; url: string; digest: Digest };
 
 export interface ArtifactEnvelopeSpec {
   packageId: string;
   phase: Phase;
   artifactType: ArtifactType;
-  content: { path?: string; url?: string; digest: Digest };
+  content: ArtifactContent;
   producer: Producer;
-  inputs: EvidenceRef[];
-  outputs: EvidenceRef[];
+  inputs: EvidenceRef<"ArtifactEnvelope">[];
+  outputs: EvidenceRef<"ArtifactEnvelope">[];
   trace: TraceEdge[];
   selfCheck: { result: "pass" | "fail" | "error"; findingIds: string[] };
 }
