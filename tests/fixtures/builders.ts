@@ -203,6 +203,7 @@ export const workflowProfile = (override: DeepPartial<WorkflowProfile> = {}): Wo
               "required-artifacts",
               "no-open-blocking-findings",
               "required-approvals",
+              "child-gates-pass",
             ],
           },
         ],

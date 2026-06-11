@@ -1,0 +1,15 @@
+apiVersion: loop.dev/v1
+kind: WorkflowProfile
+metadata: { id: routine, revision: 1, createdAt: 2026-06-11T00:00:00.000Z }
+spec:
+  tier: routine
+  description: Reduced lifecycle with no phase-level human approval by default.
+  policyIds: [base]
+  phases:
+    - { phase: requirements, required: true, requiredArtifactTypes: [requirement-spec], requiredTraceRelations: [], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [graph-integrity, required-artifacts, no-open-blocking-findings, child-gates-pass] }
+    - { phase: design, required: false, requiredArtifactTypes: [], requiredTraceRelations: [], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [] }
+    - { phase: test-planning, required: false, requiredArtifactTypes: [], requiredTraceRelations: [], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [] }
+    - { phase: implementation, required: true, requiredArtifactTypes: [implementation-record], requiredTraceRelations: [implements], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [graph-integrity, required-artifacts, required-trace-relations, no-open-blocking-findings, child-gates-pass] }
+    - { phase: review, required: true, requiredArtifactTypes: [review-report], requiredTraceRelations: [], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [graph-integrity, required-artifacts, no-open-blocking-findings, child-gates-pass] }
+    - { phase: validation, required: true, requiredArtifactTypes: [validation-report], requiredTraceRelations: [verifies], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [graph-integrity, required-artifacts, required-trace-relations, no-open-blocking-findings, child-gates-pass] }
+    - { phase: release, required: false, requiredArtifactTypes: [], requiredTraceRelations: [], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [] }

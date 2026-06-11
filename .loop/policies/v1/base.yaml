@@ -1,0 +1,15 @@
+apiVersion: loop.dev/v1
+kind: GatePolicy
+metadata:
+  id: base
+  revision: 1
+  createdAt: 2026-06-11T00:00:00.000Z
+spec:
+  description: Built-in deterministic contract-kernel rules.
+  rules:
+    - { id: graph-integrity, type: graph-integrity, blocking: true }
+    - { id: required-artifacts, type: required-artifacts, blocking: true }
+    - { id: required-trace-relations, type: required-trace-relations, blocking: true }
+    - { id: no-open-blocking-findings, type: no-open-blocking-findings, blocking: true }
+    - { id: required-approvals, type: required-approvals, blocking: true }
+    - { id: child-gates-pass, type: child-gates-pass, blocking: true }
