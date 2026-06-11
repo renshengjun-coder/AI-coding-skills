@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loop.dev/schemas/v1/ChangePackage.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "loop.dev/v1"
+    },
+    "kind": {
+      "const": "ChangePackage"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workItemType",
+        "title",
+        "owner",
+        "profileId",
+        "status",
+        "relationships"
+      ],
+      "properties": {
+        "workItemType": {
+          "type": "string",
+          "enum": [
+            "feature",
+            "requirement",
+            "bug-fix",
+            "development-task"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "profileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "complete",
+            "cancelled"
+          ]
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "relation",
+              "target"
+            ],
+            "properties": {
+              "relation": {
+                "type": "string",
+                "enum": [
+                  "decomposes-into",
+                  "child-of",
+                  "depends-on",
+                  "blocks",
+                  "supersedes"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "id",
+                  "revision",
+                  "digest"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "ChangePackage"
+                  },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^sha256:[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

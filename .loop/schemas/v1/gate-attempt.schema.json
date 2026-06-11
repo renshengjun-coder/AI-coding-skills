@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loop.dev/schemas/v1/GateAttempt.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "loop.dev/v1"
+    },
+    "kind": {
+      "const": "GateAttempt"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packageId",
+        "phase",
+        "profileId",
+        "policyIds",
+        "boundEvidence",
+        "evaluations",
+        "result",
+        "issuedBy"
+      ],
+      "properties": {
+        "packageId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "requirements",
+            "design",
+            "test-planning",
+            "implementation",
+            "review",
+            "validation",
+            "release"
+          ]
+        },
+        "profileId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policyIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "boundEvidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "id",
+              "revision",
+              "digest"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "ChangePackage",
+                  "ArtifactEnvelope",
+                  "Finding",
+                  "ClassificationDecision",
+                  "Approval",
+                  "Waiver",
+                  "GateAttempt",
+                  "WorkflowProfile",
+                  "GatePolicy"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            }
+          }
+        },
+        "evaluations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleId",
+              "blocking",
+              "outcome",
+              "message",
+              "evidence"
+            ],
+            "properties": {
+              "ruleId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "blocking": {
+                "type": "boolean"
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "pass",
+                  "fail",
+                  "error"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "id",
+                    "revision",
+                    "digest"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "ChangePackage",
+                        "ArtifactEnvelope",
+                        "Finding",
+                        "ClassificationDecision",
+                        "Approval",
+                        "Waiver",
+                        "GateAttempt",
+                        "WorkflowProfile",
+                        "GatePolicy"
+                      ]
+                    },
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "pass",
+            "fail",
+            "error",
+            "stale",
+            "waived"
+          ]
+        },
+        "issuedBy": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

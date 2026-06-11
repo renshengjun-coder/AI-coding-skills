@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loop.dev/schemas/v1/WorkflowProfile.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "loop.dev/v1"
+    },
+    "kind": {
+      "const": "WorkflowProfile"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "description",
+        "policyIds",
+        "phases"
+      ],
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": [
+            "routine",
+            "standard",
+            "high-risk"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "policyIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "phase",
+              "required",
+              "requiredArtifactTypes",
+              "requiredTraceRelations",
+              "humanApproval",
+              "minimumApprovals",
+              "enabledRuleIds"
+            ],
+            "properties": {
+              "phase": {
+                "type": "string",
+                "enum": [
+                  "requirements",
+                  "design",
+                  "test-planning",
+                  "implementation",
+                  "review",
+                  "validation",
+                  "release"
+                ]
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "requiredArtifactTypes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "requirement-spec",
+                    "design-document",
+                    "test-plan",
+                    "implementation-record",
+                    "review-report",
+                    "validation-report",
+                    "release-record"
+                  ]
+                }
+              },
+              "requiredTraceRelations": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "satisfies",
+                    "derives-from",
+                    "implements",
+                    "verifies",
+                    "reviews",
+                    "validates",
+                    "releases",
+                    "supersedes"
+                  ]
+                }
+              },
+              "humanApproval": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "conditional",
+                  "required"
+                ]
+              },
+              "minimumApprovals": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "enabledRuleIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

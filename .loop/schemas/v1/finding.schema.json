@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://loop.dev/schemas/v1/Finding.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "loop.dev/v1"
+    },
+    "kind": {
+      "const": "Finding"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packageId",
+        "phase",
+        "sourceEvaluator",
+        "ruleId",
+        "severity",
+        "status",
+        "message",
+        "affectedEvidence",
+        "recommendedAction"
+      ],
+      "properties": {
+        "packageId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "requirements",
+            "design",
+            "test-planning",
+            "implementation",
+            "review",
+            "validation",
+            "release"
+          ]
+        },
+        "sourceEvaluator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ruleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "info",
+            "warning",
+            "blocking"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "resolved",
+            "accepted"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "affectedEvidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "id",
+              "revision",
+              "digest"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "ChangePackage",
+                  "ArtifactEnvelope",
+                  "Finding",
+                  "ClassificationDecision",
+                  "Approval",
+                  "Waiver",
+                  "GateAttempt",
+                  "WorkflowProfile",
+                  "GatePolicy"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            }
+          }
+        },
+        "recommendedAction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resolutionEvidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "id",
+              "revision",
+              "digest"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "ChangePackage",
+                  "ArtifactEnvelope",
+                  "Finding",
+                  "ClassificationDecision",
+                  "Approval",
+                  "Waiver",
+                  "GateAttempt",
+                  "WorkflowProfile",
+                  "GatePolicy"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

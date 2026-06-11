@@ -1,0 +1,15 @@
+apiVersion: loop.dev/v1
+kind: WorkflowProfile
+metadata: { id: high-risk, revision: 1, createdAt: 2026-06-11T00:00:00.000Z }
+spec:
+  tier: high-risk
+  description: Full lifecycle with independent approvals at risk-sensitive gates.
+  policyIds: [base]
+  phases:
+    - { phase: requirements, required: true, requiredArtifactTypes: [requirement-spec], requiredTraceRelations: [], humanApproval: required, minimumApprovals: 2, enabledRuleIds: [graph-integrity, required-artifacts, no-open-blocking-findings, required-approvals, child-gates-pass] }
+    - { phase: design, required: true, requiredArtifactTypes: [design-document], requiredTraceRelations: [derives-from], humanApproval: required, minimumApprovals: 2, enabledRuleIds: [graph-integrity, required-artifacts, required-trace-relations, no-open-blocking-findings, required-approvals, child-gates-pass] }
+    - { phase: test-planning, required: true, requiredArtifactTypes: [test-plan], requiredTraceRelations: [], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [graph-integrity, required-artifacts, no-open-blocking-findings, child-gates-pass] }
+    - { phase: implementation, required: true, requiredArtifactTypes: [implementation-record], requiredTraceRelations: [implements], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [graph-integrity, required-artifacts, required-trace-relations, no-open-blocking-findings, child-gates-pass] }
+    - { phase: review, required: true, requiredArtifactTypes: [review-report], requiredTraceRelations: [], humanApproval: none, minimumApprovals: 0, enabledRuleIds: [graph-integrity, required-artifacts, no-open-blocking-findings, child-gates-pass] }
+    - { phase: validation, required: true, requiredArtifactTypes: [validation-report], requiredTraceRelations: [verifies], humanApproval: required, minimumApprovals: 2, enabledRuleIds: [graph-integrity, required-artifacts, required-trace-relations, no-open-blocking-findings, required-approvals, child-gates-pass] }
+    - { phase: release, required: true, requiredArtifactTypes: [release-record], requiredTraceRelations: [releases], humanApproval: required, minimumApprovals: 2, enabledRuleIds: [graph-integrity, required-artifacts, required-trace-relations, no-open-blocking-findings, required-approvals, child-gates-pass] }
