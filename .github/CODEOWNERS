@@ -1,0 +1,9 @@
+# Loop contract kernel and enforcement surfaces
+/.loop/schemas/ @platform-team
+/.loop/policies/ @platform-team
+/.loop/profiles/ @platform-team
+/.github/workflows/ @platform-team
+/src/kernel/ @platform-team
+/src/adapters/ @platform-team
+/src/ci/ @platform-team
+/src/release/ @platform-team

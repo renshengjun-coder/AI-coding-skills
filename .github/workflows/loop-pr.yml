@@ -1,0 +1,23 @@
+name: Loop PR Verification
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - ".loop/**"
+      - "src/**"
+      - "skills/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+
+permissions:
+  contents: read
+
+jobs:
+  loop-verify:
+    uses: ./.github/workflows/loop-verify.yml
+    with:
+      mode: enforce
+      git_base: ${{ github.event.pull_request.base.sha }}
+      run_repository_tests: false

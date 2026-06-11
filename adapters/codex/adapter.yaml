@@ -1,0 +1,9 @@
+apiVersion: loop.dev/v1
+kind: RuntimeAdapter
+metadata:
+  id: codex
+  version: 1.0.0
+spec:
+  runtime: codex
+  defaultModel: codex
+  description: OpenAI Codex runtime adapter for portable phase skills.

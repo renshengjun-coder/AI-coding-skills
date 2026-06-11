@@ -1,0 +1,13 @@
+apiVersion: loop.dev/v1
+kind: PhaseSkill
+metadata:
+  id: requirements
+  version: 1.0.0
+  description: Produce and self-check requirement specifications.
+spec:
+  phase: requirements
+  outputArtifactType: requirement-spec
+  requiredContext: [changePackage]
+  optionalContext: [upstreamArtifacts, findings]
+  capabilities: [read-repository, write-artifact]
+  selfCheckRules: [completeness, ambiguity, testability, internal-consistency]

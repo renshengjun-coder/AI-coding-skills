@@ -1,0 +1,13 @@
+apiVersion: loop.dev/v1
+kind: PhaseSkill
+metadata:
+  id: test-planning
+  version: 1.0.0
+  description: Produce and self-check test plans.
+spec:
+  phase: test-planning
+  outputArtifactType: test-plan
+  requiredContext: [changePackage, upstreamArtifacts]
+  optionalContext: [findings]
+  capabilities: [read-repository, write-artifact]
+  selfCheckRules: [requirement-coverage, feasibility, risk-coverage, expected-evidence]

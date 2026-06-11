@@ -1,6 +1,5 @@
-import { digestDocument } from "../canonical/canonicalize.js";
 import type { AnyDocument, GateAttempt } from "../contracts/types.js";
-import { buildEvidenceGraph, evidenceRefKey } from "../graph/evidence-graph.js";
+import { buildEvidenceGraph, digestForEvidenceReference, evidenceRefKey } from "../graph/evidence-graph.js";
 
 export interface FreshnessIssue {
   reference: string;
@@ -21,7 +20,7 @@ export function evaluateFreshness(gate: GateAttempt, currentDocuments: AnyDocume
     const current = graph.byKey.get(key);
     if (!current) {
       issues.push({ reference: key, reason: "missing" });
-    } else if (digestDocument(current) !== reference.digest) {
+    } else if (digestForEvidenceReference(current) !== reference.digest) {
       issues.push({ reference: key, reason: "digest-mismatch" });
     }
   }

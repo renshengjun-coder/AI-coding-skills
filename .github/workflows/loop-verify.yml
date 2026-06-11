@@ -1,0 +1,60 @@
+# Reusable Loop verification workflow (subproject 6).
+# Call from repository PR/push workflows with enforce or report-only mode.
+name: Loop Verify
+
+on:
+  workflow_call:
+    inputs:
+      mode:
+        description: enforce blocks on failure; report-only logs issues
+        required: false
+        type: string
+        default: enforce
+      git_base:
+        description: Git ref to diff against for changed package discovery
+        required: false
+        type: string
+        default: HEAD~1
+      run_repository_tests:
+        description: Run npm test as part of loop package verification
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Loop package verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c2afbcb # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d55f19a4f3235432ede57feaa53 # v4.1.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Repository quality gate
+        run: npm run typecheck && npm test
+
+      - name: Verify changed loop packages
+        run: |
+          EXTRA=""
+          if [ "${{ inputs.run_repository_tests }}" = "true" ]; then EXTRA="--repo-tests"; fi
+          npm run loop -- verify-changed \
+            --from-git-diff \
+            --git-base "${{ inputs.git_base }}" \
+            --mode "${{ inputs.mode }}" \
+            $EXTRA

@@ -1,0 +1,13 @@
+apiVersion: loop.dev/v1
+kind: PhaseSkill
+metadata:
+  id: review
+  version: 1.0.0
+  description: Produce risk-focused review reports.
+spec:
+  phase: review
+  outputArtifactType: review-report
+  requiredContext: [changePackage, upstreamArtifacts]
+  optionalContext: [findings]
+  capabilities: [read-repository, write-artifact]
+  selfCheckRules: [evidence-grounding, severity-calibration, coverage, disposition-completeness]

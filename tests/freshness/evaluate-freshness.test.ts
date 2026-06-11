@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { digestDocument } from "../../src/kernel/canonical/canonicalize.js";
 import { evaluateFreshness } from "../../src/kernel/freshness/evaluate-freshness.js";
+import { digestForEvidenceReference } from "../../src/kernel/graph/evidence-graph.js";
 import { evaluateGate } from "../../src/kernel/policy/evaluate-gate.js";
 import {
   artifactEnvelope,
@@ -19,7 +20,7 @@ describe("evaluateFreshness", () => {
           kind: artifact.kind,
           id: artifact.metadata.id,
           revision: artifact.metadata.revision,
-          digest: digestDocument(artifact),
+          digest: digestForEvidenceReference(artifact),
         }],
       },
     });
@@ -34,7 +35,7 @@ describe("evaluateFreshness", () => {
           kind: artifact.kind,
           id: artifact.metadata.id,
           revision: artifact.metadata.revision,
-          digest: digestDocument(artifact),
+          digest: digestForEvidenceReference(artifact),
         }],
       },
     });

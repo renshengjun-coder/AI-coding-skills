@@ -69,7 +69,7 @@ describe("evidence graph", () => {
           kind: "ArtifactEnvelope",
           id: requirement.metadata.id,
           revision: requirement.metadata.revision,
-          digest: digestDocument(requirement),
+          digest: requirement.spec.content.digest,
         }],
       },
     });
