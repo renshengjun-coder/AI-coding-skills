@@ -2,16 +2,24 @@
   "name": "contract-kernel",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/kernel/index.js",
+  "types": "./dist/kernel/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/kernel/index.d.ts",
+      "import": "./dist/kernel/index.js"
+    }
+  },
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "test": "vitest run",
+    "test:package": "node --input-type=module --eval=\"import('contract-kernel').then(({ KERNEL_API_VERSION }) => { if (KERNEL_API_VERSION !== 'loop.dev/v1') process.exit(1); })\"",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "schemas": "tsx scripts/generate-schemas.ts",
-    "verify": "npm run schemas && npm run typecheck && npm test && npm run build"
+    "verify": "npm run schemas && npm run typecheck && npm test && npm run build && npm run test:package"
   },
   "keywords": [],
   "author": "",
