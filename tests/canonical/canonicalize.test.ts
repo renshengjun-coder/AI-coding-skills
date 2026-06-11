@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   canonicalize,
   digestDocument,
+  MAX_CANONICAL_ARRAY_LENGTH,
+  MAX_CANONICAL_NESTING_DEPTH,
   sha256Digest,
 } from "../../src/kernel/canonical/canonicalize.js";
 import { changePackage } from "../fixtures/builders.js";
@@ -41,6 +43,12 @@ describe("canonicalize", () => {
     expect(sha256Digest(compact)).toMatch(/^sha256:[0-9a-f]{64}$/);
   });
 
+  it("matches the known SHA-256 digest for canonical object data", () => {
+    expect(sha256Digest({ b: 2, a: 1 })).toBe(
+      "sha256:43258cff783fe7036d8a43033f830adfc60ec037382473548ac742b888292777",
+    );
+  });
+
   it.each([
     ["NaN", { value: Number.NaN }, "finite"],
     ["positive infinity", { value: Number.POSITIVE_INFINITY }, "finite"],
@@ -60,6 +68,45 @@ describe("canonicalize", () => {
     value.self = value;
 
     expect(() => canonicalize(value)).toThrow("cyclic");
+  });
+
+  it("rejects huge sparse arrays before walking their declared length", () => {
+    const value: unknown[] = [];
+    value.length = MAX_CANONICAL_ARRAY_LENGTH + 1;
+
+    expect(() => canonicalize(value)).toThrow(
+      `arrays must contain at most ${MAX_CANONICAL_ARRAY_LENGTH} elements`,
+    );
+  });
+
+  it("rejects values beyond the maximum nesting depth with a TypeError", () => {
+    let value: unknown = null;
+    for (let depth = 0; depth <= MAX_CANONICAL_NESTING_DEPTH; depth += 1) value = [value];
+
+    expect(() => canonicalize(value)).toThrow(TypeError);
+    expect(() => canonicalize(value)).toThrow(
+      `nesting depth must not exceed ${MAX_CANONICAL_NESTING_DEPTH}`,
+    );
+  });
+
+  it("accepts values at the maximum nesting depth", () => {
+    let value: unknown = null;
+    for (let depth = 0; depth < MAX_CANONICAL_NESTING_DEPTH; depth += 1) value = [value];
+
+    expect(() => canonicalize(value)).not.toThrow();
+  });
+
+  it.each([
+    ["string value with a lone high surrogate", { value: "\ud800" }],
+    ["string value with a lone low surrogate", { value: "\udc00" }],
+    ["object key with a lone high surrogate", { ["\ud800"]: "value" }],
+    ["object key with a lone low surrogate", { ["\udc00"]: "value" }],
+  ])("rejects %s", (_label, value) => {
+    expect(() => canonicalize(value)).toThrow("Unicode scalar values");
+  });
+
+  it("accepts paired UTF-16 surrogates", () => {
+    expect(canonicalize({ emoji: "\ud83d\ude00" })).toBe('{"emoji":"😀"}');
   });
 
   it("rejects accessor-backed array elements", () => {
