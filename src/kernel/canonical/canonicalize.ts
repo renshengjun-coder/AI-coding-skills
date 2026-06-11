@@ -1,14 +1,15 @@
 import { createHash } from "node:crypto";
 import type { AnyDocument, Digest } from "../contracts/types.js";
 
-type JsonPrimitive = null | boolean | number | string;
-type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
-
 function incompatible(detail?: string): TypeError {
   return new TypeError(`values must be JSON-compatible${detail ? `: ${detail}` : ""}`);
 }
 
-function normalizeArray(value: unknown[], ancestors: WeakSet<object>): JsonValue[] {
+function serializeString(value: string): string {
+  return JSON.stringify(value);
+}
+
+function serializeArray(value: unknown[], ancestors: WeakSet<object>): string {
   const expectedNames = new Set(["length"]);
   for (let index = 0; index < value.length; index += 1) expectedNames.add(String(index));
 
@@ -19,7 +20,7 @@ function normalizeArray(value: unknown[], ancestors: WeakSet<object>): JsonValue
     throw incompatible("arrays must be dense and contain no extra properties");
   }
 
-  const result: JsonValue[] = [];
+  const elements: string[] = [];
   for (let index = 0; index < value.length; index += 1) {
     const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
     if (!descriptor?.enumerable) {
@@ -28,12 +29,12 @@ function normalizeArray(value: unknown[], ancestors: WeakSet<object>): JsonValue
     if (!("value" in descriptor)) {
       throw incompatible("array elements must be enumerable data properties");
     }
-    result.push(normalize(descriptor.value, ancestors));
+    elements.push(serialize(descriptor.value, ancestors));
   }
-  return result;
+  return `[${elements.join(",")}]`;
 }
 
-function normalizeObject(value: object, ancestors: WeakSet<object>): Record<string, JsonValue> {
+function serializeObject(value: object, ancestors: WeakSet<object>): string {
   const prototype = Object.getPrototypeOf(value) as unknown;
   if (prototype !== Object.prototype && prototype !== null) {
     throw incompatible("objects must be plain objects");
@@ -43,22 +44,24 @@ function normalizeObject(value: object, ancestors: WeakSet<object>): Record<stri
     throw incompatible("object keys must be strings");
   }
 
-  const result: Record<string, JsonValue> = {};
+  const members: string[] = [];
   for (const key of Object.getOwnPropertyNames(value).sort()) {
     const descriptor = Object.getOwnPropertyDescriptor(value, key);
     if (!descriptor?.enumerable || !("value" in descriptor)) {
       throw incompatible("object properties must be enumerable data properties");
     }
-    result[key] = normalize(descriptor.value, ancestors);
+    members.push(`${serializeString(key)}:${serialize(descriptor.value, ancestors)}`);
   }
-  return result;
+  return `{${members.join(",")}}`;
 }
 
-function normalize(value: unknown, ancestors: WeakSet<object>): JsonValue {
-  if (value === null || typeof value === "string" || typeof value === "boolean") return value;
+function serialize(value: unknown, ancestors: WeakSet<object>): string {
+  if (value === null) return "null";
+  if (typeof value === "string") return serializeString(value);
+  if (typeof value === "boolean") return String(value);
   if (typeof value === "number") {
     if (!Number.isFinite(value)) throw new TypeError("numbers must be finite");
-    return value;
+    return JSON.stringify(value);
   }
   if (typeof value !== "object") throw incompatible();
   if (ancestors.has(value)) throw incompatible("cyclic values are not supported");
@@ -66,15 +69,15 @@ function normalize(value: unknown, ancestors: WeakSet<object>): JsonValue {
   ancestors.add(value);
   try {
     return Array.isArray(value)
-      ? normalizeArray(value, ancestors)
-      : normalizeObject(value, ancestors);
+      ? serializeArray(value, ancestors)
+      : serializeObject(value, ancestors);
   } finally {
     ancestors.delete(value);
   }
 }
 
 export function canonicalize(value: unknown): string {
-  return JSON.stringify(normalize(value, new WeakSet()));
+  return serialize(value, new WeakSet());
 }
 
 export function sha256Digest(value: unknown): Digest {

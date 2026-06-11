@@ -13,6 +13,20 @@ describe("canonicalize", () => {
     );
   });
 
+  it("sorts integer-like object keys lexicographically", () => {
+    expect(canonicalize({ 2: "two", 10: "ten", 1: "one" })).toBe(
+      '{"1":"one","10":"ten","2":"two"}',
+    );
+  });
+
+  it("preserves an own __proto__ key without digest collisions", () => {
+    const withProtoKey = JSON.parse('{"__proto__":"evidence","value":1}') as unknown;
+    const withoutProtoKey = { value: 1 };
+
+    expect(canonicalize(withProtoKey)).toBe('{"__proto__":"evidence","value":1}');
+    expect(sha256Digest(withProtoKey)).not.toBe(sha256Digest(withoutProtoKey));
+  });
+
   it("gives formatting- and key-order-independent SHA-256 digests", () => {
     const compact = JSON.parse('{"b":2,"a":{"d":4,"c":3}}') as unknown;
     const formatted = JSON.parse(`{
