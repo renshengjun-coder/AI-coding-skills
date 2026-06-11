@@ -38,6 +38,58 @@ describe("validateDocument", () => {
     );
   });
 
+  it("rejects documents whose required properties are inherited", () => {
+    const inheritedDocument = Object.create(changePackage()) as unknown;
+
+    const result = validateDocument(inheritedDocument);
+
+    expect(result.valid).toBe(false);
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ path: "/", keyword: "required" }),
+    );
+    expect(() => assertValidDocument(inheritedDocument)).toThrow("/: must have required property");
+  });
+
+  it("reports all independent schema violations as structured issues", () => {
+    const invalid = changePackage({
+      metadata: { id: "", revision: 0 },
+      spec: { title: "", owner: "" },
+    });
+
+    const result = validateDocument(invalid);
+
+    expect(result.valid).toBe(false);
+    expect(result.issues).toEqual(
+      expect.arrayContaining([
+        {
+          path: "/metadata/id",
+          keyword: "minLength",
+          message: "must NOT have fewer than 1 characters",
+        },
+        { path: "/metadata/revision", keyword: "minimum", message: "must be >= 1" },
+        {
+          path: "/spec/title",
+          keyword: "minLength",
+          message: "must NOT have fewer than 1 characters",
+        },
+        {
+          path: "/spec/owner",
+          keyword: "minLength",
+          message: "must NOT have fewer than 1 characters",
+        },
+      ]),
+    );
+    expect(result.issues).toHaveLength(4);
+    expect(() => assertValidDocument(invalid)).toThrow(
+      [
+        "/metadata/id: must NOT have fewer than 1 characters",
+        "/metadata/revision: must be >= 1",
+        "/spec/title: must NOT have fewer than 1 characters",
+        "/spec/owner: must NOT have fewer than 1 characters",
+      ].join("\n"),
+    );
+  });
+
   it("requires package relationships to target change packages", () => {
     const result = validateDocument(
       changePackage({

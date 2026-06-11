@@ -28,6 +28,25 @@ describe("loadDocument", () => {
     expect(loadDocument(json, "package.json").kind).toBe("ChangePackage");
   });
 
+  it.each(["package.yml", "package.YAML", "package.YML"])(
+    "loads YAML from supported extension %s",
+    (sourceName) => {
+      expect(loadDocument(validYaml, sourceName).kind).toBe("ChangePackage");
+    },
+  );
+
+  it("loads JSON from a case-insensitive extension", () => {
+    const json = JSON.stringify(loadDocument(validYaml, "package.yaml"));
+
+    expect(loadDocument(json, "package.JSON").kind).toBe("ChangePackage");
+  });
+
+  it("rejects unsupported document extensions", () => {
+    expect(() => loadDocument(validYaml, "package.txt")).toThrow(
+      "package.txt: unsupported document extension",
+    );
+  });
+
   it("reports the source name when validation fails", () => {
     expect(() => loadDocument("kind: Other", "broken.yaml")).toThrow("broken.yaml");
   });

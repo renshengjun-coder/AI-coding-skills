@@ -15,7 +15,7 @@ export interface ValidationResult {
   issues: ValidationIssue[];
 }
 
-const ajv = new Ajv2020Module.default({ allErrors: true, strict: true });
+const ajv = new Ajv2020Module.default({ allErrors: true, ownProperties: true, strict: true });
 addFormatsModule.default(ajv);
 
 const validators = new Map<ContractKind, ValidateFunction>();
